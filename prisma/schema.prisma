@@ -1,0 +1,163 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity", "fieldReference"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type AvatarbuildercategoriesData {
+  blend   AvatarbuildercategoriesDataBlend[]
+  color   AvatarbuildercategoriesDataColor[]
+  mesh    AvatarbuildercategoriesDataMesh[]
+  texture AvatarbuildercategoriesDataTexture[]
+}
+
+type AssetbuildercategoriesData {
+  items AssetbuildercategoriesDataItems[]
+}
+
+type AvatarbuildercategoriesDataBlend {
+  thumbnailURL String? @default("")
+  url          String
+  value        String
+  itemID       String? @default(uuid())
+}
+
+type AvatarbuildercategoriesDataColor {
+  thumbnailURL String? @default("")
+  url          String
+  value        String
+  itemID       String? @default(uuid())
+}
+
+type AvatarbuildercategoriesDataMesh {
+  thumbnailURL String? @default("")
+  url          String
+  value        String
+  itemID       String? @default(uuid())
+}
+
+type AssetbuildercategoriesDataItems {
+  itemID      String?      @default(uuid())
+  itemName    String
+  itemType    String
+  itemIcon    String?      @default("")
+  itemDesc    String?
+  itemPrice   ItemPrice
+  itemTexUrls itemTexUrl[]
+  itemClass   String
+}
+
+type itemTexUrl {
+  texId   String
+  texUrl  String
+  iconUrl String
+}
+
+type ItemPrice {
+  chain      String
+  chainPrice Float
+  usdt       Float
+}
+
+type AvatarbuildercategoriesDataTexture {
+  thumbnailURL String? @default("")
+  url          String
+  value        String
+  itemID       String? @default(uuid())
+}
+
+enum Gender {
+  male
+  female
+}
+
+model avatarbuildercategories {
+  id        String                      @id @default(auto()) @map("_id") @db.ObjectId
+  uid       Int?                        @map("id")
+  data      AvatarbuildercategoriesData
+  name      String
+  shortCode String
+  gender    Gender
+}
+
+model businessUser {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  password String
+  userName String
+}
+
+model tournaments {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  v                 Int      @map("__v")
+  dominoTileColor   String
+  entryFee          Int
+  environmentFloor  String
+  gameCenter        String
+  host              String   @db.ObjectId
+  user              users    @relation(fields: [host], references: [id])
+  isHostedByDominos Boolean
+  logo              String
+  name              String
+  noOfPlayers       Int
+  prizePool         Int
+  rule              String
+  scheduleDate      DateTime @db.Date
+  status            String
+  tableTexture      String
+  winnerShare       Float
+}
+
+model users {
+  id                                       String        @id @default(auto()) @map("_id") @db.ObjectId
+  v                                        Int           @map("__v")
+  authProvider                             String?
+  country                                  String
+  dateOfBirth                              DateTime      @db.Date
+  email                                    String
+  firstName                                String
+  gender                                   String
+  googleUserId                             String?
+  isEmailVerified                          Boolean
+  isTermsOfServiceAndPrivacyPolicyAccepted Boolean?
+  lastName                                 String
+  password                                 String?
+  profileImage                             String?
+  userName                                 String
+  user_type                                Int           @default(1)
+  tournaments                              tournaments[]
+  status                                   Int
+}
+
+type AssetImage {
+  url          String
+  thumbnailURL String
+}
+
+model assetbuildercategories {
+  id        String                     @id @default(auto()) @map("_id") @db.ObjectId
+  uid       Int?                       @map("id")
+  data      AssetbuildercategoriesData
+  name      String
+  shortCode String
+  gender    Gender
+}
+
+model cms {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  slug    String
+  content String
+
+  @@unique([slug])
+}
+
+model faq {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  question String
+  answer   String
+}
